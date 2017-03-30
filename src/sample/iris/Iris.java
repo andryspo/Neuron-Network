@@ -15,7 +15,7 @@ public class Iris {
 
     public Iris(String[] params) {
         parameters = new ArrayList<>();
-        if(params.length - 1 == COUNT_OF_PARAMS) {
+        if(params.length  >= COUNT_OF_PARAMS) {
             parameters.add(Double.parseDouble(params[0]));
             parameters.add(Double.parseDouble(params[1]));
             parameters.add(Double.parseDouble(params[2]));

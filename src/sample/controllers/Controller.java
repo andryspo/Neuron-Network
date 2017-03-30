@@ -1,14 +1,12 @@
-package sample;
+package sample.controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import sample.Exceptions.UnsupportedIrisType;
-import sample.iris.IrisTypes;
-import sample.iris.Setosa;
-import sample.iris.Verginica;
-import sample.iris.Versicolor;
+import sample.exceptions.UnsupportedIrisType;
+import sample.iris.*;
+import sample.pnn.PNN;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,11 +33,11 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        sigma.setText("0.5");
-        par1.setText("2.1");
-        par2.setText("5.1");
-        par3.setText("3.0");
-        par4.setText("0.1");
+        sigma.setText("0.2");
+        par1.setText("5.2");
+        par2.setText("1.4");
+        par3.setText("3.4");
+        par4.setText("0.2");
     }
 
     public void calc(ActionEvent actionEvent) throws IOException {
@@ -49,6 +47,13 @@ public class Controller {
         List<Verginica> verginicaIris = new ArrayList<>();
         List<Versicolor> versicolorIris = new ArrayList<>();
         List<Setosa> setosaIris = new ArrayList<>();
+
+        Iris iris = new Iris(new String[] {
+                par1.getText(),
+                par2.getText(),
+                par3.getText(),
+                par4.getText()
+        });
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String str;
@@ -70,6 +75,7 @@ public class Controller {
                 }
             }
         }
+        List<Double> vergR = PNN.calcR(verginicaIris, iris);
 
     }
 }

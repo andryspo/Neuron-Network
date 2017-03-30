@@ -1,4 +1,4 @@
-package sample.Exceptions;
+package sample.exceptions;
 
 public class UnsupportedIrisType extends RuntimeException {
 }
