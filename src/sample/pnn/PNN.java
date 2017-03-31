@@ -17,6 +17,45 @@ public class PNN {
             }
             r.add(Math.sqrt(sum));
         }
+
         return r;
+    }
+
+    public static List<Double> calcD(List<Double> r, double sigma) {
+
+        List<Double> d = new ArrayList<>();
+
+        for (Double ri : r) {
+            d.add(Math.exp(-(ri * ri) / (sigma * sigma)));
+        }
+
+        return d;
+    }
+
+    public static List<Double> calcP(List<Double>... ds) {
+        List<Double> p = new ArrayList<>();
+
+        double sumD = 0;
+
+        for (List<Double> di : ds) {
+            sumD += sum(di);
+        }
+
+        for (List<Double> di : ds) {
+            p.add(sum(di) / sumD);
+        }
+
+        return p;
+    }
+
+    private static double sum(List<Double> list) {
+
+        double sum = 0;
+
+        for (Double i : list) {
+            sum += i;
+        }
+
+        return sum;
     }
 }

@@ -6,6 +6,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import sample.exceptions.UnsupportedIrisType;
 import sample.iris.*;
+import sample.output.PNNOutputService;
 import sample.pnn.PNN;
 
 import java.io.BufferedReader;
@@ -18,7 +19,7 @@ import java.util.List;
 public class Controller {
 
     @FXML
-    private TextField sigma;
+    private TextField sigmaTF;
     @FXML
     private TextField par1;
     @FXML
@@ -33,7 +34,7 @@ public class Controller {
 
     @FXML
     private void initialize() {
-        sigma.setText("0.2");
+        sigmaTF.setText("0.2");
         par1.setText("5.2");
         par2.setText("1.4");
         par3.setText("3.4");
@@ -48,7 +49,22 @@ public class Controller {
         List<Versicolor> versicolorIris = new ArrayList<>();
         List<Setosa> setosaIris = new ArrayList<>();
 
-        Iris iris = new Iris(new String[] {
+        List<Double> vergR;
+        List<Double> versicolorR;
+        List<Double> setosaR;
+
+        List<Double> vergD;
+        List<Double> versicolorD;
+        List<Double> setosaD;
+
+        List<Double> p;
+        String irisType;
+
+        PNNOutputService outputService = new PNNOutputService("result.txt");
+
+        double sigma = Double.parseDouble(sigmaTF.getText());
+
+        Iris iris = new Iris(new String[]{
                 par1.getText(),
                 par2.getText(),
                 par3.getText(),
@@ -59,7 +75,6 @@ public class Controller {
             String str;
             while ((str = reader.readLine()) != null) {
                 String[] params = str.split(" ");
-                System.out.println(params[4]);
                 switch (params[4]) {
                     case IrisTypes.SETOSA:
                         setosaIris.add(new Setosa(params));
@@ -75,7 +90,31 @@ public class Controller {
                 }
             }
         }
-        List<Double> vergR = PNN.calcR(verginicaIris, iris);
 
+        vergR = PNN.calcR(verginicaIris, iris);
+        setosaR = PNN.calcR(setosaIris, iris);
+        versicolorR = PNN.calcR(versicolorIris, iris);
+
+        vergD = PNN.calcD(vergR, sigma);
+        setosaD = PNN.calcD(setosaR, sigma);
+        versicolorD = PNN.calcD(versicolorR, sigma);
+
+        outputService.appendGeneralInfo(sigma, iris.getParameters());
+        outputService.appendNewClass(IrisTypes.SETOSA, setosaR, setosaD);
+        outputService.appendNewClass(IrisTypes.VERGINICA, vergR, vergD);
+        outputService.appendNewClass(IrisTypes.VERSICOLOR, versicolorR, versicolorD);
+
+        p = PNN.calcP(setosaD, vergD, versicolorD);
+
+        if (p.get(0) > p.get(1) && p.get(0) > p.get(2)) {
+            irisType = IrisTypes.SETOSA;
+        } else if (p.get(1) > p.get(0) && p.get(1) > p.get(2)) {
+            irisType = IrisTypes.VERGINICA;
+        } else {
+            irisType = IrisTypes.VERSICOLOR;
+        }
+
+
+        outputService.appendResult(p, irisType);
     }
 }
